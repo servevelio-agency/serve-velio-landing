@@ -158,7 +158,7 @@ export default function RevenueFunnel() {
   };
 
   return (
-    <main className='relative isolate bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white'>
+    <main className='relative isolate bg-gradient-to-b from-background via-slate-900/20 to-background text-foreground'>
       <AnimatePresence mode='wait'>
         {/* HERO SECTION */}
         {step === 'hero' && (
@@ -171,8 +171,8 @@ export default function RevenueFunnel() {
             transition={{ duration: 0.5 }}
           >
             <div className='absolute inset-0 overflow-hidden pointer-events-none'>
-              <div className='absolute top-0 right-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2' />
-              <div className='absolute bottom-0 left-0 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2' />
+              <div className='absolute top-0 right-0 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2' />
+              <div className='absolute bottom-0 left-0 w-96 h-96 bg-blue-500/15 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2' />
             </div>
 
             <div className='relative z-10 max-w-4xl mx-auto w-full'>
@@ -180,59 +180,61 @@ export default function RevenueFunnel() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.6 }}
-                className='text-center space-y-6'
+                className='text-center space-y-8'
               >
-                <div className='inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-2 backdrop-blur-sm'>
-                  <Sparkles className='w-4 h-4 text-purple-400' />
-                  <span className='text-xs sm:text-sm font-medium text-purple-200'>
+                <div className='inline-flex items-center gap-2 rounded-full border border-purple-500/40 bg-purple-500/10 px-4 py-2 backdrop-blur-sm'>
+                  <Sparkles className='w-4 h-4 text-purple-300' />
+                  <span className='text-xs sm:text-sm font-semibold text-purple-200'>
                     Revenue Recovery for High-Growth Operators
                   </span>
                 </div>
 
-                <h1 className='text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight tracking-tight'>
-                  <span className='bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent'>
-                    Every Minute Your Ads Run
-                  </span>
-                  <br />
-                  <span className='text-white'>Without a Response,</span>
-                  <br />
-                  <span className='bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent'>
-                    You Are Losing Money.
-                  </span>
-                </h1>
+                <div className='space-y-6'>
+                  <h1 className='text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight tracking-tight'>
+                    <span className='block text-white mb-2'>
+                      Every Minute Your Ads Run
+                    </span>
+                    <span className='block bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent'>
+                      Without a Response
+                    </span>
+                    <span className='block text-white mt-2'>
+                      You're Losing Money
+                    </span>
+                  </h1>
 
-                <div className='space-y-3 max-w-2xl mx-auto'>
-                  <p className='text-base sm:text-lg text-purple-200 font-semibold'>
-                    Stop the "Lead Leak."
-                  </p>
-                  <p className='text-sm sm:text-base text-slate-300 leading-relaxed'>
-                    We bridge the gap between your ad spend and your bank
-                    account with high-speed follow-up and swift sales
-                    operations.
-                  </p>
-                  <p className='text-xs sm:text-sm text-slate-400 leading-relaxed'>
-                    You're spending thousands on Meta and LinkedIn to find
-                    customers. But if a lead comments on your post or fills out
-                    your form and waits 4 hours for a reply, they've already
-                    moved on to your competitor.
-                  </p>
-                  <p className='text-base sm:text-lg text-purple-300 font-semibold'>
-                    The Lead Response Gap is the #1 killer of ROI.
-                  </p>
-                  <p className='text-sm text-slate-300'>
-                    Want to see the exact dollar amount slipping through your
-                    fingers? Use the tool below.
-                  </p>
+                  <div className='space-y-4 max-w-2xl mx-auto'>
+                    <p className='text-lg sm:text-xl text-purple-200 font-semibold'>
+                      Stop the "Lead Leak."
+                    </p>
+                    <p className='text-base sm:text-lg text-slate-300 leading-relaxed'>
+                      We bridge the gap between your ad spend and your bank
+                      account with high-speed follow-up and swift sales
+                      operations.
+                    </p>
+                    <p className='text-sm sm:text-base text-slate-400 leading-relaxed'>
+                      You're spending thousands on Meta and LinkedIn to find
+                      customers. But if a lead comments on your post or fills
+                      out your form and waits 4 hours for a reply, they've
+                      already moved on to your competitor.
+                    </p>
+                    <p className='text-lg sm:text-xl text-purple-300 font-semibold pt-2'>
+                      The Lead Response Gap is the #1 killer of ROI.
+                    </p>
+                    <p className='text-base text-slate-300'>
+                      Want to see the exact dollar amount slipping through your
+                      fingers? Use the tool below.
+                    </p>
+                  </div>
                 </div>
 
                 <motion.button
                   onClick={() => setStep('calculator')}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className='inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white font-semibold py-3 px-6 sm:py-4 sm:px-8 rounded-full transition-all duration-300 shadow-lg shadow-purple-500/30 text-sm sm:text-base'
+                  className='inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white font-bold py-4 px-8 sm:py-5 sm:px-10 rounded-lg transition-all duration-300 shadow-lg shadow-purple-500/40 text-base sm:text-lg'
                 >
                   Calculate My Revenue Leak
-                  <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5' />
+                  <ArrowRight className='w-5 h-5 sm:w-6 sm:h-6' />
                 </motion.button>
               </motion.div>
             </div>
@@ -250,7 +252,7 @@ export default function RevenueFunnel() {
             transition={{ duration: 0.5 }}
           >
             <div className='absolute inset-0 overflow-hidden pointer-events-none'>
-              <div className='absolute top-1/2 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl' />
+              <div className='absolute top-1/2 right-1/4 w-96 h-96 bg-blue-500/15 rounded-full blur-3xl' />
             </div>
 
             <div className='relative z-10 w-full max-w-5xl mx-auto'>
@@ -265,30 +267,30 @@ export default function RevenueFunnel() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.3 }}
-                  className='space-y-5'
+                  className='space-y-6'
                 >
-                  <div className='space-y-1'>
-                    <h2 className='text-3xl sm:text-4xl font-bold'>
+                  <div className='space-y-2'>
+                    <h2 className='text-4xl sm:text-5xl font-bold'>
                       The Revenue Recovery Calculator
                     </h2>
-                    <p className='text-xs sm:text-sm text-slate-400'>
+                    <p className='text-sm sm:text-base text-slate-400'>
                       Fill in your metrics to see your exact revenue leak
                     </p>
                   </div>
 
-                  <div className='space-y-4'>
+                  <div className='space-y-5'>
                     <div className='space-y-2'>
-                      <label className='block text-xs sm:text-sm font-semibold text-slate-200'>
+                      <label className='block text-sm font-semibold text-slate-200'>
                         Average Monthly Lead Volume
                       </label>
                       <input
                         type='number'
                         {...calculator.register('leadsPerMonth')}
                         placeholder='500'
-                        className='w-full px-3 py-2 sm:px-4 sm:py-3 rounded-lg bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all text-sm'
+                        className='w-full px-4 py-3 sm:px-5 sm:py-4 rounded-lg bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30 transition-all text-base font-medium'
                       />
                       {calculator.formState.errors.leadsPerMonth && (
-                        <p className='text-xs text-red-400'>
+                        <p className='text-sm text-red-400 font-medium'>
                           {calculator.formState.errors.leadsPerMonth.message}
                         </p>
                       )}
@@ -299,7 +301,7 @@ export default function RevenueFunnel() {
                       animate={{ opacity: canRevealDeal ? 1 : 0.5 }}
                       className='space-y-2'
                     >
-                      <label className='block text-xs sm:text-sm font-semibold text-slate-200'>
+                      <label className='block text-sm font-semibold text-slate-200'>
                         Average Deal Value (LTV)
                       </label>
                       <input
@@ -307,10 +309,10 @@ export default function RevenueFunnel() {
                         {...calculator.register('dealValue')}
                         placeholder='5000'
                         disabled={!canRevealDeal}
-                        className='w-full px-3 py-2 sm:px-4 sm:py-3 rounded-lg bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm'
+                        className='w-full px-4 py-3 sm:px-5 sm:py-4 rounded-lg bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-base font-medium'
                       />
                       {calculator.formState.errors.dealValue && (
-                        <p className='text-xs text-red-400'>
+                        <p className='text-sm text-red-400 font-medium'>
                           {calculator.formState.errors.dealValue.message}
                         </p>
                       )}
@@ -321,7 +323,7 @@ export default function RevenueFunnel() {
                       animate={{ opacity: canRevealConversion ? 1 : 0.5 }}
                       className='space-y-2'
                     >
-                      <label className='block text-xs sm:text-sm font-semibold text-slate-200'>
+                      <label className='block text-sm font-semibold text-slate-200'>
                         Estimated Conversion Rate (Decimal)
                       </label>
                       <input
@@ -332,10 +334,10 @@ export default function RevenueFunnel() {
                         {...calculator.register('conversionRate')}
                         placeholder='0.30'
                         disabled={!canRevealConversion}
-                        className='w-full px-3 py-2 sm:px-4 sm:py-3 rounded-lg bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm'
+                        className='w-full px-4 py-3 sm:px-5 sm:py-4 rounded-lg bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-base font-medium'
                       />
                       {calculator.formState.errors.conversionRate && (
-                        <p className='text-xs text-red-400'>
+                        <p className='text-sm text-red-400 font-medium'>
                           {calculator.formState.errors.conversionRate.message}
                         </p>
                       )}
@@ -346,13 +348,13 @@ export default function RevenueFunnel() {
                       animate={{ opacity: canRevealResponse ? 1 : 0.5 }}
                       className='space-y-2'
                     >
-                      <label className='block text-xs sm:text-sm font-semibold text-slate-200'>
+                      <label className='block text-sm font-semibold text-slate-200'>
                         Current Average Response Time (Estimated)
                       </label>
                       <select
                         {...calculator.register('responseDelay')}
                         disabled={!canRevealResponse}
-                        className='w-full px-3 py-2 sm:px-4 sm:py-3 rounded-lg bg-slate-800/50 border border-slate-700 text-white focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm'
+                        className='w-full px-4 py-3 sm:px-5 sm:py-4 rounded-lg bg-slate-800/50 border border-slate-700 text-white focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-base font-medium'
                       >
                         <option value=''>Select response time</option>
                         {responseOptions.map((opt) => (
@@ -362,7 +364,7 @@ export default function RevenueFunnel() {
                         ))}
                       </select>
                       {calculator.formState.errors.responseDelay && (
-                        <p className='text-xs text-red-400'>
+                        <p className='text-sm text-red-400 font-medium'>
                           {calculator.formState.errors.responseDelay.message}
                         </p>
                       )}
@@ -377,15 +379,17 @@ export default function RevenueFunnel() {
                   transition={{ delay: 0.3 }}
                   className='flex flex-col justify-between'
                 >
-                  <div className='rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-900/20 to-blue-900/20 backdrop-blur-sm p-6 sm:p-8 space-y-6 flex-1'>
+                  <div className='rounded-2xl border border-purple-500/40 bg-gradient-to-br from-purple-900/20 to-blue-900/20 backdrop-blur-sm p-6 sm:p-8 space-y-6 flex-1'>
                     <motion.div
                       key={`leads-${leadsPerMonthValue}`}
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      className='space-y-1'
+                      className='space-y-2'
                     >
-                      <p className='text-xs text-slate-400'>Monthly Leads</p>
-                      <p className='text-3xl sm:text-4xl font-bold text-white'>
+                      <p className='text-xs text-slate-400 font-semibold uppercase tracking-wider'>
+                        Monthly Leads
+                      </p>
+                      <p className='text-4xl sm:text-5xl font-bold text-white'>
                         {leadsPerMonthValue || '—'}
                       </p>
                     </motion.div>
@@ -395,10 +399,12 @@ export default function RevenueFunnel() {
                         key={`deal-${dealValueNumber}`}
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        className='space-y-1'
+                        className='space-y-2'
                       >
-                        <p className='text-xs text-slate-400'>Deal Value</p>
-                        <p className='text-3xl sm:text-4xl font-bold text-purple-300'>
+                        <p className='text-xs text-slate-400 font-semibold uppercase tracking-wider'>
+                          Deal Value
+                        </p>
+                        <p className='text-4xl sm:text-5xl font-bold text-purple-300'>
                           {dealValueNumber
                             ? formatNumber(dealValueNumber)
                             : '—'}
@@ -411,12 +417,12 @@ export default function RevenueFunnel() {
                         key={`conversion-${conversionRateValue}`}
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        className='space-y-1'
+                        className='space-y-2'
                       >
-                        <p className='text-xs text-slate-400'>
+                        <p className='text-xs text-slate-400 font-semibold uppercase tracking-wider'>
                           Conversion Rate
                         </p>
-                        <p className='text-3xl sm:text-4xl font-bold text-blue-300'>
+                        <p className='text-4xl sm:text-5xl font-bold text-blue-300'>
                           {(conversionRateValue * 100).toFixed(1)}%
                         </p>
                       </motion.div>
@@ -427,10 +433,12 @@ export default function RevenueFunnel() {
                         key={`response-${responseDelayValue}`}
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        className='space-y-1'
+                        className='space-y-2'
                       >
-                        <p className='text-xs text-slate-400'>Response Time</p>
-                        <p className='text-3xl sm:text-4xl font-bold text-pink-300'>
+                        <p className='text-xs text-slate-400 font-semibold uppercase tracking-wider'>
+                          Response Time
+                        </p>
+                        <p className='text-4xl sm:text-5xl font-bold text-pink-300'>
                           {responseDelayValue
                             ? responseOptions.find(
                                 (opt) => opt.value === responseDelayValue
@@ -450,7 +458,7 @@ export default function RevenueFunnel() {
                       }
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className='w-full mt-4 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white font-semibold py-2 sm:py-3 rounded-lg transition-all duration-300 text-sm sm:text-base'
+                      className='w-full mt-6 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white font-bold py-4 sm:py-5 rounded-lg transition-all duration-300 text-base sm:text-lg shadow-lg shadow-purple-500/40'
                     >
                       Show Me the Numbers
                     </motion.button>
@@ -472,7 +480,7 @@ export default function RevenueFunnel() {
             transition={{ duration: 0.5 }}
           >
             <div className='absolute inset-0 overflow-hidden pointer-events-none'>
-              <div className='absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl' />
+              <div className='absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl' />
             </div>
 
             <div className='relative z-10 w-full max-w-xl mx-auto'>
@@ -482,11 +490,11 @@ export default function RevenueFunnel() {
                 transition={{ delay: 0.2 }}
                 className='space-y-6'
               >
-                <div className='text-center space-y-2'>
-                  <h2 className='text-3xl sm:text-4xl font-bold'>
+                <div className='text-center space-y-3'>
+                  <h2 className='text-4xl sm:text-5xl font-bold'>
                     See Your Recovery Report.
                   </h2>
-                  <p className='text-xs sm:text-sm text-slate-300'>
+                  <p className='text-base sm:text-lg text-slate-300'>
                     Enter your email to view your results. We'll also send you a
                     PDF breakdown and our "Systems Architect" tips on plugging
                     lead leaks for good.
@@ -498,38 +506,38 @@ export default function RevenueFunnel() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.3 }}
                   onSubmit={emailForm.handleSubmit(onEmailSubmit)}
-                  className='space-y-4 rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-900/20 to-blue-900/20 backdrop-blur-sm p-6 sm:p-8'
+                  className='space-y-5 rounded-2xl border border-purple-500/40 bg-gradient-to-br from-purple-900/20 to-blue-900/20 backdrop-blur-sm p-6 sm:p-8'
                 >
                   <div className='space-y-2'>
-                    <label className='block text-xs sm:text-sm font-semibold text-slate-200'>
+                    <label className='block text-sm font-semibold text-slate-200'>
                       Enter your professional email
                     </label>
                     <input
                       type='email'
                       {...emailForm.register('email')}
                       placeholder='your@email.com'
-                      className='w-full px-3 py-2 sm:px-4 sm:py-3 rounded-lg bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all text-sm'
+                      className='w-full px-4 py-3 sm:px-5 sm:py-4 rounded-lg bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30 transition-all text-base font-medium'
                     />
                     {emailForm.formState.errors.email && (
-                      <p className='text-xs text-red-400'>
+                      <p className='text-sm text-red-400 font-medium'>
                         {emailForm.formState.errors.email.message}
                       </p>
                     )}
                   </div>
 
-                  <div className='flex items-start gap-2'>
+                  <div className='flex items-start gap-3'>
                     <input
                       type='checkbox'
                       {...emailForm.register('consent')}
-                      className='mt-1 w-4 h-4 rounded border-slate-700 bg-slate-800/50 text-purple-600 focus:ring-2 focus:ring-purple-500/20 cursor-pointer'
+                      className='mt-1 w-5 h-5 rounded border-slate-700 bg-slate-800/50 text-purple-600 focus:ring-2 focus:ring-purple-500/30 cursor-pointer'
                     />
-                    <label className='text-xs sm:text-sm text-slate-300'>
+                    <label className='text-sm sm:text-base text-slate-300'>
                       Yes, send me my report and add me to the Revenue
                       Operations newsletter for recurring tactical growth tips.
                     </label>
                   </div>
                   {emailForm.formState.errors.consent && (
-                    <p className='text-xs text-red-400'>
+                    <p className='text-sm text-red-400 font-medium'>
                       {emailForm.formState.errors.consent.message}
                     </p>
                   )}
@@ -539,13 +547,13 @@ export default function RevenueFunnel() {
                     disabled={isSubmitting}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className='w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white font-semibold py-2 sm:py-3 rounded-lg transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed text-sm sm:text-base'
+                    className='w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white font-bold py-4 sm:py-5 rounded-lg transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed text-base sm:text-lg shadow-lg shadow-purple-500/40'
                   >
                     {isSubmitting ? 'Processing...' : 'Show Me the Numbers'}
                   </motion.button>
 
                   {apiMessage && (
-                    <p className='text-xs sm:text-sm text-slate-300 text-center'>
+                    <p className='text-sm sm:text-base text-slate-300 text-center font-medium'>
                       {apiMessage}
                     </p>
                   )}
@@ -566,7 +574,7 @@ export default function RevenueFunnel() {
             transition={{ duration: 0.5 }}
           >
             <div className='absolute inset-0 overflow-hidden pointer-events-none'>
-              <div className='absolute inset-0 bg-gradient-to-b from-purple-900/30 via-transparent to-blue-900/30' />
+              <div className='absolute inset-0 bg-gradient-to-b from-purple-900/20 via-transparent to-blue-900/20' />
             </div>
 
             <div className='relative z-10 w-full max-w-3xl mx-auto text-center'>
@@ -576,7 +584,7 @@ export default function RevenueFunnel() {
                 transition={{ delay: 0.2 }}
                 className='space-y-8'
               >
-                <h2 className='text-3xl sm:text-4xl font-bold'>
+                <h2 className='text-4xl sm:text-5xl font-bold'>
                   Analyzing your revenue leak...
                 </h2>
 
@@ -591,9 +599,9 @@ export default function RevenueFunnel() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3 + idx * 0.1 }}
-                      className='rounded-xl border border-purple-500/30 bg-gradient-to-br from-purple-900/20 to-blue-900/20 backdrop-blur-sm p-4 sm:p-6'
+                      className='rounded-xl border border-purple-500/40 bg-gradient-to-br from-purple-900/20 to-blue-900/20 backdrop-blur-sm p-4 sm:p-6'
                     >
-                      <p className='text-slate-300 text-xs sm:text-sm mb-3'>
+                      <p className='text-slate-300 text-sm sm:text-base mb-4 font-medium'>
                         {label}
                       </p>
                       <div className='h-2 w-full overflow-hidden rounded-full bg-slate-800'>
@@ -623,8 +631,8 @@ export default function RevenueFunnel() {
             transition={{ duration: 0.5 }}
           >
             <div className='absolute inset-0 overflow-hidden pointer-events-none'>
-              <div className='absolute top-0 right-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2' />
-              <div className='absolute bottom-0 left-0 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2' />
+              <div className='absolute top-0 right-0 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2' />
+              <div className='absolute bottom-0 left-0 w-96 h-96 bg-blue-500/15 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2' />
             </div>
 
             <div className='relative z-10 w-full max-w-5xl mx-auto'>
@@ -635,8 +643,8 @@ export default function RevenueFunnel() {
                 className='space-y-6'
               >
                 {/* Header */}
-                <div className='text-center space-y-2'>
-                  <h2 className='text-3xl sm:text-4xl font-bold'>
+                <div className='text-center space-y-3'>
+                  <h2 className='text-4xl sm:text-5xl font-bold'>
                     Your Estimated Monthly Revenue Leak
                   </h2>
                 </div>
@@ -646,17 +654,17 @@ export default function RevenueFunnel() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.3 }}
-                  className='rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-900/20 to-blue-900/20 backdrop-blur-sm p-6 sm:p-8 text-center space-y-4'
+                  className='rounded-2xl border border-purple-500/40 bg-gradient-to-br from-purple-900/20 to-blue-900/20 backdrop-blur-sm p-6 sm:p-8 text-center space-y-4'
                 >
                   <motion.p
                     key={calcResult?.revenueLeak}
                     initial={{ scale: 0.5, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className='text-5xl sm:text-6xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent'
+                    className='text-6xl sm:text-7xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent'
                   >
                     {calcResult ? formatNumber(calcResult.revenueLeak) : '$0'}
                   </motion.p>
-                  <p className='text-slate-300 text-xs sm:text-sm max-w-xl mx-auto'>
+                  <p className='text-slate-300 text-base sm:text-lg max-w-xl mx-auto'>
                     This is the revenue you're losing every month due to slow
                     response times.
                   </p>
@@ -667,13 +675,13 @@ export default function RevenueFunnel() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className='rounded-xl border border-slate-700 bg-slate-800/30 p-5 sm:p-6 text-center space-y-2'
+                  className='rounded-xl border border-slate-700 bg-slate-800/30 p-6 sm:p-8 text-center space-y-3'
                 >
-                  <p className='text-base sm:text-lg font-semibold text-white'>
+                  <p className='text-lg sm:text-xl font-bold text-white'>
                     This isn't just a number; it's a structural failure in your
                     sales process.
                   </p>
-                  <p className='text-xs sm:text-sm text-slate-300'>
+                  <p className='text-base sm:text-lg text-slate-300'>
                     If you aren't first, you're last.
                   </p>
                 </motion.div>
@@ -692,7 +700,7 @@ export default function RevenueFunnel() {
                     },
                     {
                       title: 'Sales & Conversion',
-                      desc: 'We don\'t just "talk", we move your leads through high-conversion scripts to close the deal.',
+                      desc: "We don't just 'talk', we move your leads through high-conversion scripts to close the deal.",
                     },
                     {
                       title: 'Engagement & Retention',
@@ -704,12 +712,12 @@ export default function RevenueFunnel() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.6 + idx * 0.1 }}
-                      className='rounded-xl border border-purple-500/30 bg-gradient-to-br from-purple-900/20 to-blue-900/20 backdrop-blur-sm p-4 sm:p-6 space-y-2'
+                      className='rounded-xl border border-purple-500/40 bg-gradient-to-br from-purple-900/20 to-blue-900/20 backdrop-blur-sm p-5 sm:p-6 space-y-3'
                     >
-                      <h3 className='text-sm sm:text-base font-bold text-white'>
+                      <h3 className='text-base sm:text-lg font-bold text-white'>
                         {item.title}
                       </h3>
-                      <p className='text-xs sm:text-sm text-slate-300 leading-relaxed'>
+                      <p className='text-sm sm:text-base text-slate-300 leading-relaxed'>
                         {item.desc}
                       </p>
                     </motion.div>
@@ -724,7 +732,7 @@ export default function RevenueFunnel() {
                   onClick={() => setStep('booking')}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className='w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white font-semibold py-2 sm:py-3 rounded-lg transition-all duration-300 text-sm sm:text-base'
+                  className='w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white font-bold py-4 sm:py-5 rounded-lg transition-all duration-300 text-base sm:text-lg shadow-lg shadow-purple-500/40'
                 >
                   Continue to Book Your Audit
                 </motion.button>
@@ -744,7 +752,7 @@ export default function RevenueFunnel() {
             transition={{ duration: 0.5 }}
           >
             <div className='absolute inset-0 overflow-hidden pointer-events-none'>
-              <div className='absolute top-0 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl -translate-y-1/2' />
+              <div className='absolute top-0 left-1/4 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl -translate-y-1/2' />
             </div>
 
             <div className='relative z-10 w-full max-w-3xl mx-auto'>
@@ -755,11 +763,11 @@ export default function RevenueFunnel() {
                 className='text-center space-y-8'
               >
                 <div className='space-y-4'>
-                  <h2 className='text-3xl sm:text-4xl font-bold'>
+                  <h2 className='text-4xl sm:text-5xl font-bold'>
                     Ready to Turn "Ghost Revenue" into Banked Profit?
                   </h2>
-                  <p className='text-xs sm:text-sm text-slate-300 max-w-xl mx-auto leading-relaxed'>
-                    I have cleared 15 minutes on my calendar to walk you through
+                  <p className='text-base sm:text-lg text-slate-300 max-w-xl mx-auto leading-relaxed'>
+                    I have cleared 30 minutes on my calendar to walk you through
                     a custom Revenue Recovery roadmap for your company. No sales
                     pitch, just a tactical blueprint to stop the leak.
                   </p>
@@ -769,13 +777,13 @@ export default function RevenueFunnel() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className='rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-900/20 to-blue-900/20 backdrop-blur-sm p-6 sm:p-8 space-y-6'
+                  className='rounded-2xl border border-purple-500/40 bg-gradient-to-br from-purple-900/20 to-blue-900/20 backdrop-blur-sm p-6 sm:p-8 space-y-6'
                 >
                   <div className='space-y-2'>
-                    <h3 className='text-xl sm:text-2xl font-bold text-white'>
-                      Book Your 15-Minute Revenue Audit
+                    <h3 className='text-2xl sm:text-3xl font-bold text-white'>
+                      Book Your 30-Minute Revenue Audit
                     </h3>
-                    <p className='text-xs sm:text-sm text-slate-300'>
+                    <p className='text-sm sm:text-base text-slate-300'>
                       So we can dive straight into the fix.
                     </p>
                   </div>
@@ -786,10 +794,10 @@ export default function RevenueFunnel() {
                     rel='noopener noreferrer'
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className='inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white font-semibold py-2 sm:py-3 px-6 sm:px-8 rounded-full transition-all duration-300 shadow-lg shadow-purple-500/30 text-sm sm:text-base'
+                    className='inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white font-bold py-4 sm:py-5 px-8 sm:px-10 rounded-lg transition-all duration-300 shadow-lg shadow-purple-500/40 text-base sm:text-lg'
                   >
                     Schedule Your Call
-                    <ExternalLink className='w-4 h-4 sm:w-5 sm:h-5' />
+                    <ExternalLink className='w-5 h-5 sm:w-6 sm:h-6' />
                   </motion.a>
                 </motion.div>
 
@@ -797,7 +805,7 @@ export default function RevenueFunnel() {
                   onClick={() => setStep('footer')}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className='text-slate-400 hover:text-slate-300 text-xs sm:text-sm font-medium transition-colors'
+                  className='text-slate-400 hover:text-slate-300 text-sm sm:text-base font-semibold transition-colors'
                 >
                   or continue to finish
                 </motion.button>
@@ -827,10 +835,10 @@ export default function RevenueFunnel() {
                 transition={{ delay: 0.2 }}
                 className='space-y-4'
               >
-                <h2 className='text-3xl sm:text-4xl font-bold'>
+                <h2 className='text-4xl sm:text-5xl font-bold'>
                   Managed Operations for High-Growth Firms.
                 </h2>
-                <p className='text-xs sm:text-sm text-slate-300'>
+                <p className='text-base sm:text-lg text-slate-300'>
                   Your revenue recovery starts now.
                 </p>
               </motion.div>
@@ -839,7 +847,7 @@ export default function RevenueFunnel() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className='flex flex-col sm:flex-row gap-4 justify-center items-center text-xs sm:text-sm'
+                className='flex flex-col sm:flex-row gap-4 justify-center items-center text-sm sm:text-base'
               >
                 <a
                   href='#'
@@ -872,14 +880,14 @@ export default function RevenueFunnel() {
                 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className='inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white font-semibold py-2 sm:py-3 px-6 sm:px-8 rounded-full transition-all duration-300 shadow-lg shadow-purple-500/30 text-sm sm:text-base'
+                className='inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white font-bold py-4 sm:py-5 px-8 sm:px-10 rounded-lg transition-all duration-300 shadow-lg shadow-purple-500/40 text-base sm:text-lg'
               >
                 Start Over
-                <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5' />
+                <ArrowRight className='w-5 h-5 sm:w-6 sm:h-6' />
               </motion.button>
 
               <div className='pt-6 border-t border-slate-700/50'>
-                <p className='text-xs text-slate-400'>
+                <p className='text-sm text-slate-400'>
                   © 2026 Revenue Operations. All rights reserved.
                 </p>
               </div>
