@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { NextResponse } from 'next/server';
+import type { LaunchOptions } from 'playwright-core';
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -32,6 +33,7 @@ function generateReportHTML(data: {
     h1 { color: #333; }
     .metric { margin: 20px 0; padding: 10px; border-left: 4px solid #007bff; background: #f8f9fa; }
     .highlight { font-size: 1.2em; font-weight: bold; color: #dc3545; }
+    .btn { display:inline-block; padding:10px 16px; background:#007bff; color:#fff; text-decoration:none; border-radius:6px; }
   </style>
 </head>
 <body>
@@ -67,35 +69,82 @@ function generateReportHTML(data: {
   </div>
   
   <p>This represents the revenue you're potentially losing due to delayed responses. Contact us for strategies to improve your response times and capture more revenue.</p>
+
+  <p>If you'd like to discuss strategies to reduce your revenue leak, feel free to book a consultation.</p>
+  <p><a class="btn" href="https://calendly.com/servevelio-agency/30min">Book a consultation</a></p>
 </body>
 </html>
   `;
 }
 
 async function generatePDF(html: string): Promise<Buffer> {
-  const apiKey = process.env.DOCRAPTOR_API_KEY;
-  if (!apiKey) {
-    throw new Error('DocRaptor API key not configured');
+  // Render HTML to PDF using Playwright + Sparticuz Chromium.
+  const playwright = await import('playwright-core');
+  const { chromium } = playwright;
+
+  const chromiumPkg = await import('@sparticuz/chromium');
+  // Resolve executable path from the Sparticuz package (multiple export shapes possible).
+  let execPath: string | undefined;
+  const pkgRecord = chromiumPkg as unknown as Record<string, unknown>;
+  const candidate =
+    pkgRecord['executablePath'] ??
+    pkgRecord['executablePathSync'] ??
+    pkgRecord['default'] ??
+    pkgRecord;
+  if (typeof candidate === 'function') {
+    // Call or instantiate the candidate to obtain a path or helper object.
+    let result: unknown;
+    try {
+      result = (candidate as (...args: unknown[]) => unknown)();
+    } catch (err) {
+      // If it's a class constructor, instantiate with `new`.
+      const fnStr = String(candidate);
+      if (/^class\s/.test(fnStr)) {
+        const Constructor = candidate as unknown as new (
+          ...args: unknown[]
+        ) => unknown;
+        result = new Constructor();
+      } else {
+        throw err;
+      }
+    }
+
+    if (result instanceof Promise) result = await result;
+
+    // Normalize possible return shapes to a string path.
+    if (typeof result === 'string') {
+      execPath = result;
+    } else if (result && typeof result === 'object') {
+      const r = result as Record<string, unknown>;
+      if (typeof r.executablePath === 'function') {
+        const p = (r.executablePath as (...a: unknown[]) => unknown)();
+        execPath = p instanceof Promise ? String(await p) : String(p);
+      } else if (typeof r.executablePathSync === 'function') {
+        execPath = String((r.executablePathSync as () => unknown)());
+      } else if (typeof r.path === 'string') {
+        execPath = r.path;
+      }
+    }
+  } else if (typeof candidate === 'string') {
+    execPath = candidate;
   }
 
-  const response = await fetch('https://docraptor.com/docs', {
-    method: 'POST',
-    headers: {
-      Authorization: `Basic ${Buffer.from(apiKey + ':').toString('base64')}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      document_content: html,
-      type: 'pdf',
-      test: process.env.NODE_ENV !== 'production',
-    }),
+  const launchOptions: LaunchOptions = {
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  };
+
+  if (execPath) launchOptions.executablePath = execPath;
+
+  const browser = await chromium.launch(launchOptions);
+  const page = await browser.newPage({
+    viewport: { width: 1280, height: 800 },
   });
+  await page.setContent(html, { waitUntil: 'networkidle' });
+  const pdf = await page.pdf({ format: 'A4', printBackground: true });
+  await browser.close();
 
-  if (!response.ok) {
-    throw new Error(`DocRaptor error: ${response.statusText}`);
-  }
-
-  return Buffer.from(await response.arrayBuffer());
+  return Buffer.from(pdf);
 }
 
 export async function POST(request: Request) {
@@ -166,6 +215,7 @@ export async function POST(request: Request) {
         <p>Thank you for your interest in optimizing your revenue funnel!</p>
         <p>Attached is your personalized revenue leak analysis report.</p>
         <p>If you'd like to discuss strategies to reduce your revenue leak, feel free to book a consultation.</p>
+        <p><a href="https://calendly.com/servevelio-agency/30min" style="display:inline-block;padding:10px 16px;background:#007bff;color:#fff;text-decoration:none;border-radius:6px;">Book a consultation</a></p>
         <p>Best regards,<br>The Revenue Team</p>
       `,
       attachments: [
