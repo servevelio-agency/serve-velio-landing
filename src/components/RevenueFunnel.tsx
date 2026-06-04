@@ -71,7 +71,7 @@ export default function RevenueFunnel() {
     defaultValues: {
       leadsPerMonth: '' as any,
       dealValue: '' as any,
-      conversionRate: '' as any,
+      conversionRate: 0.3,
       responseDelay: '',
     },
   });
@@ -91,8 +91,7 @@ export default function RevenueFunnel() {
 
   const canRevealDeal = leadsPerMonthValue > 0;
   const canRevealConversion = canRevealDeal && dealValueNumber > 0;
-  const canRevealResponse =
-    canRevealConversion && !Number.isNaN(conversionRateValue);
+  const canRevealResponse = canRevealConversion;
 
   const calcResult = useMemo(() => {
     if (!calcPayload) return null;
@@ -320,31 +319,6 @@ export default function RevenueFunnel() {
 
                     <motion.div
                       initial={{ opacity: 0 }}
-                      animate={{ opacity: canRevealConversion ? 1 : 0.5 }}
-                      className='space-y-2'
-                    >
-                      <label className='block text-sm font-semibold text-slate-200'>
-                        Estimated Conversion Rate (Decimal)
-                      </label>
-                      <input
-                        type='number'
-                        step='0.01'
-                        min='0'
-                        max='1'
-                        {...calculator.register('conversionRate')}
-                        placeholder='0.30'
-                        disabled={!canRevealConversion}
-                        className='w-full px-4 py-3 sm:px-5 sm:py-4 rounded-lg bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-base font-medium'
-                      />
-                      {calculator.formState.errors.conversionRate && (
-                        <p className='text-sm text-red-400 font-medium'>
-                          {calculator.formState.errors.conversionRate.message}
-                        </p>
-                      )}
-                    </motion.div>
-
-                    <motion.div
-                      initial={{ opacity: 0 }}
                       animate={{ opacity: canRevealResponse ? 1 : 0.5 }}
                       className='space-y-2'
                     >
@@ -408,22 +382,6 @@ export default function RevenueFunnel() {
                           {dealValueNumber
                             ? formatNumber(dealValueNumber)
                             : '—'}
-                        </p>
-                      </motion.div>
-                    )}
-
-                    {canRevealConversion && (
-                      <motion.div
-                        key={`conversion-${conversionRateValue}`}
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        className='space-y-2'
-                      >
-                        <p className='text-xs text-slate-400 font-semibold uppercase tracking-wider'>
-                          Conversion Rate
-                        </p>
-                        <p className='text-4xl sm:text-5xl font-bold text-blue-300'>
-                          {(conversionRateValue * 100).toFixed(1)}%
                         </p>
                       </motion.div>
                     )}
@@ -850,21 +808,23 @@ export default function RevenueFunnel() {
                 className='flex flex-col sm:flex-row gap-4 justify-center items-center text-sm sm:text-base'
               >
                 <a
-                  href='#'
+                  href='/portfolio'
                   className='text-purple-300 hover:text-purple-200 font-semibold transition-colors'
                 >
                   View Full Portfolio
                 </a>
                 <span className='hidden sm:block text-slate-600'>|</span>
                 <a
-                  href='#'
+                  href='https://www.linkedin.com/in/elias-a-91085218b'
+                  target='_blank'
+                  rel='noopener noreferrer'
                   className='text-purple-300 hover:text-purple-200 font-semibold transition-colors'
                 >
                   LinkedIn Profile
                 </a>
                 <span className='hidden sm:block text-slate-600'>|</span>
                 <a
-                  href='#'
+                  href='/privacy-policy'
                   className='text-purple-300 hover:text-purple-200 font-semibold transition-colors'
                 >
                   Privacy Policy
