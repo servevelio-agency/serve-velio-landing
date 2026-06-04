@@ -23,6 +23,8 @@ export default function Portfolio() {
   const [isLoading, setIsLoading] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pdfDocRef = useRef<any>(null);
+  const renderTaskRef = useRef<any>(null);
+  const isRenderingRef = useRef(false);
 
   // Default portfolio PDF URL - replace with your actual PDF
   const portfolioUrl = '/elias-portfolio.pdf';
@@ -55,7 +57,8 @@ export default function Portfolio() {
         const pdf = await pdfjsLib.getDocument(portfolioUrl).promise;
         pdfDocRef.current = pdf;
         setTotalPages(pdf.numPages);
-        renderPage(1, pdf);
+        // Let the page change effect handle rendering
+        setCurrentPage(1);
       } catch (error) {
         console.error('Error loading PDF:', error);
       } finally {
@@ -69,37 +72,88 @@ export default function Portfolio() {
 
   // Render specific page
   const renderPage = async (pageNum: number, pdf?: any) => {
-    if (!canvasRef.current) return;
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      console.warn('Canvas not available for rendering');
+      return;
+    }
+
+    // Cancel previous render task if it's still running
+    if (renderTaskRef.current) {
+      try {
+        renderTaskRef.current.cancel();
+      } catch (error) {
+        // Task might already be complete, ignore
+      }
+    }
 
     try {
       const pdfDoc = pdf || pdfDocRef.current;
-      if (!pdfDoc) return;
+      if (!pdfDoc) {
+        console.warn('PDF document not available');
+        return;
+      }
 
       const page = await pdfDoc.getPage(pageNum);
       const viewport = page.getViewport({ scale });
-      const canvas = canvasRef.current;
 
       canvas.width = viewport.width;
       canvas.height = viewport.height;
 
+      const context = canvas.getContext('2d', { willReadFrequently: true });
+      if (!context) {
+        console.error('Failed to get canvas context');
+        return;
+      }
+
+      // Clear canvas before rendering
+      context.fillStyle = 'white';
+      context.fillRect(0, 0, canvas.width, canvas.height);
+
       const renderContext = {
-        canvasContext: canvas.getContext('2d'),
+        canvasContext: context,
         viewport: viewport,
       };
 
-      await page.render(renderContext).promise;
+      renderTaskRef.current = page.render(renderContext);
+      await renderTaskRef.current.promise;
+      renderTaskRef.current = null;
     } catch (error) {
-      console.error('Error rendering page:', error);
+      if ((error as any).name !== 'RenderingCancelledException') {
+        console.error('Error rendering page:', error);
+      }
     }
   };
 
   // Handle page changes
   useEffect(() => {
-    if (isModalOpen && pdfDocRef.current) {
+    if (
+      isModalOpen &&
+      pdfDocRef.current &&
+      canvasRef.current &&
+      totalPages > 0
+    ) {
       renderPage(currentPage);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, scale, isModalOpen]);
+  }, [currentPage, scale, isModalOpen, totalPages]);
+
+  // Force render when modal opens
+  useEffect(() => {
+    if (
+      isModalOpen &&
+      pdfDocRef.current &&
+      canvasRef.current &&
+      totalPages > 0
+    ) {
+      const timer = setTimeout(() => {
+        renderPage(currentPage);
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isModalOpen]);
 
   // Handle zoom
   const handleZoom = (direction: 'in' | 'out') => {
@@ -114,7 +168,7 @@ export default function Portfolio() {
   const handleDownload = () => {
     const link = document.createElement('a');
     link.href = portfolioUrl;
-    link.download = 'portfolio.pdf';
+    link.download = 'elias-portfolio.pdf';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
