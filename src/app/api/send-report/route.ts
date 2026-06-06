@@ -397,7 +397,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    // Generate PDF
+    // Build report data
     const reportData = {
       leadsPerMonth: payload.leads_per_month,
       conversionRate: payload.conversion_rate,
@@ -409,19 +409,40 @@ export async function POST(request: Request) {
     };
 
     const html = generateReportHTML(reportData);
-    const pdfBuffer = await generatePDF(html);
+
+    // Generate PDF (separate try/catch to identify failures)
+    let pdfBuffer: Buffer;
+    try {
+      pdfBuffer = await generatePDF(html);
+    } catch (err) {
+      console.error('PDF generation error:', err);
+      return NextResponse.json(
+        { error: 'Failed to generate PDF.' },
+        { status: 500 }
+      );
+    }
 
     const replyTo = process.env.MAIL_REPLY_TO || 'servevelio.agency@gmail.com';
     const internalCopy = process.env.MAIL_INTERNAL_COPY?.trim();
 
-    // Send email with PDF attachment
-    await resend.emails.send({
-      from: process.env.FROM_EMAIL || 'noreply@servelhub.com',
-      to: payload.email,
-      replyTo: replyTo,
-      bcc: internalCopy ? [internalCopy] : undefined,
-      subject: 'Your Revenue Leak Analysis Report',
-      html: `
+    // Check email service configuration
+    if (!process.env.RESEND_API_KEY) {
+      console.error('Missing RESEND_API_KEY environment variable.');
+      return NextResponse.json(
+        { error: 'Email service not configured.' },
+        { status: 500 }
+      );
+    }
+
+    // Send email with PDF attachment (separate try/catch to isolate errors)
+    try {
+      await resend.emails.send({
+        from: process.env.FROM_EMAIL || 'noreply@servelhub.com',
+        to: payload.email,
+        replyTo: replyTo,
+        bcc: internalCopy ? [internalCopy] : undefined,
+        subject: 'Your Revenue Leak Analysis Report',
+        html: `
       <p style="font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a202c; margin-bottom: 24px;">
   <strong>Your Revenue Recovery Report is ready.</strong>
 </p>
@@ -466,19 +487,26 @@ export async function POST(request: Request) {
 </p>
 
       `,
-      attachments: [
-        {
-          filename: 'revenue-leak-report.pdf',
-          content: pdfBuffer,
-        },
-      ],
-    });
+        attachments: [
+          {
+            filename: 'revenue-leak-report.pdf',
+            content: pdfBuffer,
+          },
+        ],
+      });
+    } catch (err) {
+      console.error('Email send error:', err);
+      return NextResponse.json(
+        { error: 'Failed to send email.' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       message: 'Report sent successfully to your email.',
     });
   } catch (error) {
-    console.error('Error generating/sending report:', error);
+    console.error('Unexpected error in send-report handler:', error);
     return NextResponse.json(
       { error: 'Failed to generate or send report.' },
       { status: 500 }
