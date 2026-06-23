@@ -454,7 +454,7 @@ export default function RevenueFunnel() {
                   </h2>
                   <p className='text-base sm:text-lg text-slate-300'>
                     Enter your email to view your results. We'll also send you a
-                    PDF breakdown and our "Systems Architect" tips on plugging
+                    detailed breakdown and our "Systems Architect" tips on plugging
                     lead leaks for good.
                   </p>
                 </div>

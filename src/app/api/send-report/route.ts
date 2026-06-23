@@ -1,10 +1,6 @@
-import { existsSync } from 'node:fs';
 import { supabase } from '@/lib/supabase';
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
-
-export const runtime = 'nodejs';
-export const maxDuration = 60;
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -290,63 +286,6 @@ function generateReportHTML(data: {
   `;
 }
 
-function resolveLocalChrome(): string | undefined {
-  const candidates = [
-    process.env.CHROME_EXECUTABLE_PATH,
-    process.env.PUPPETEER_EXECUTABLE_PATH,
-    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-    'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
-    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    '/usr/bin/google-chrome',
-    '/usr/bin/chromium-browser',
-  ].filter((path): path is string => Boolean(path));
-
-  return candidates.find((path) => existsSync(path));
-}
-
-async function generatePDF(html: string): Promise<Buffer> {
-  const puppeteer = await import('puppeteer-core');
-  const isVercel = Boolean(process.env.VERCEL);
-
-  let executablePath: string;
-  let args: string[];
-
-  if (isVercel) {
-    const chromium = (await import('@sparticuz/chromium')).default;
-    chromium.setGraphicsMode = false;
-    executablePath = await chromium.executablePath();
-    args = chromium.args;
-  } else {
-    const localChrome = resolveLocalChrome();
-    if (!localChrome) {
-      throw new Error(
-        'No local Chrome found. Install Chrome or set CHROME_EXECUTABLE_PATH.'
-      );
-    }
-    executablePath = localChrome;
-    args = ['--no-sandbox', '--disable-setuid-sandbox'];
-  }
-
-  const browser = await puppeteer.default.launch({
-    args,
-    executablePath,
-    headless: true,
-  });
-
-  try {
-    const page = await browser.newPage();
-    await page.setViewport({ width: 1280, height: 800 });
-    await page.setContent(html, {
-      waitUntil: 'load',
-      timeout: 30_000,
-    });
-    const pdf = await page.pdf({ format: 'A4', printBackground: true });
-    return Buffer.from(pdf);
-  } finally {
-    await browser.close();
-  }
-}
-
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   if (!body) {
@@ -400,22 +339,9 @@ export async function POST(request: Request) {
 
     const html = generateReportHTML(reportData);
 
-    // Generate PDF (separate try/catch to identify failures)
-    let pdfBuffer: Buffer;
-    try {
-      pdfBuffer = await generatePDF(html);
-    } catch (err) {
-      console.error('PDF generation error:', err);
-      return NextResponse.json(
-        { error: 'Failed to generate PDF.' },
-        { status: 500 }
-      );
-    }
-
     const replyTo = process.env.MAIL_REPLY_TO || 'servevelio.agency@gmail.com';
     const internalCopy = process.env.MAIL_INTERNAL_COPY?.trim();
 
-    // Check email service configuration
     if (!process.env.RESEND_API_KEY) {
       console.error('Missing RESEND_API_KEY environment variable.');
       return NextResponse.json(
@@ -424,7 +350,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Send email with PDF attachment (separate try/catch to isolate errors)
     try {
       await resend.emails.send({
         from: process.env.FROM_EMAIL || 'noreply@servelhub.com',
@@ -432,57 +357,7 @@ export async function POST(request: Request) {
         replyTo: replyTo,
         bcc: internalCopy ? [internalCopy] : undefined,
         subject: 'Your Revenue Leak Analysis Report',
-        html: `
-      <p style="font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a202c; margin-bottom: 24px;">
-  <strong>Your Revenue Recovery Report is ready.</strong>
-</p>
-
-<p style="font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a202c; margin-bottom: 20px;">
-  Based on the data provided, your current lead response process is likely causing significant monthly revenue leakage. We have <strong>attached your personalized analysis breakdown</strong> to this email so you can review the exact impact on your pipeline and conversion flow.
-</p>
-
-<p style="font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a202c; margin-bottom: 20px;">
-  This report isn't just a projection it's a tactical map showing exactly where capital is exiting your funnel due to response delays and missed opportunities.
-</p>
-
-<p style="font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a202c; margin-bottom: 20px;">
-  To help you plug these leaks immediately, we invite you to a focused <strong>Revenue Audit Session</strong>. During this session, we will:
-</p>
-
-<ul style="font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a202c; margin-bottom: 24px; padding-left: 20px;">
-  <li style="margin-bottom: 12px;">Deconstruct your specific leakage points identified in the attachment.</li>
-  <li style="margin-bottom: 12px;">Deploy tactical strategies to optimize your lead handling speed.</li>
-  <li style="margin-bottom: 12px;">Review the exact ROI of recapturing your "lost" revenue opportunities.</li>
-</ul>
-
-<p style="font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a202c; margin-bottom: 32px;">
-  Reclaiming this revenue starts with a single tactical adjustment. Secure your session below:
-</p>
-
-<p style="font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a202c; margin-bottom: 24px;">
-  <a 
-    href="https://calendly.com/servevelio-agency/30min"
-    style="display:inline-block;padding:14px 28px;background:#4F46E5;color:#ffffff;text-decoration:none;border-radius:8px;font-weight:700;font-size:16px;box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2 );"
-  >
-    Book Your Revenue Audit
-  </a>
-</p>
-
-<p style="font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 15px; line-height: 1.6; color: #4b5563; margin-top: 40px;">
-  Regards,  
-
-  <strong>The Revenue Operations Team</strong>  
-
-  Servevelio Agency
-</p>
-
-      `,
-        attachments: [
-          {
-            filename: 'revenue-leak-report.pdf',
-            content: pdfBuffer,
-          },
-        ],
+        html,
       });
     } catch (err) {
       console.error('Email send error:', err);
