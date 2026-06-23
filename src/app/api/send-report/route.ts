@@ -1,7 +1,9 @@
 import { supabase } from '@/lib/supabase';
 import { NextResponse } from 'next/server';
-import type { LaunchOptions } from 'playwright-core';
 import { Resend } from 'resend';
+
+export const runtime = 'nodejs';
+export const maxDuration = 60;
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -288,73 +290,40 @@ function generateReportHTML(data: {
 }
 
 async function generatePDF(html: string): Promise<Buffer> {
-  // Render HTML to PDF using Playwright + Sparticuz Chromium.
-  const playwright = await import('playwright-core');
-  const { chromium } = playwright;
+  const { chromium: playwrightChromium } = await import('playwright-core');
+  const isDev = process.env.NODE_ENV === 'development';
 
-  const chromiumPkg = await import('@sparticuz/chromium');
-  // Resolve executable path from the Sparticuz package (multiple export shapes possible).
-  let execPath: string | undefined;
-  const pkgRecord = chromiumPkg as unknown as Record<string, unknown>;
-  const candidate =
-    pkgRecord['executablePath'] ??
-    pkgRecord['executablePathSync'] ??
-    pkgRecord['default'] ??
-    pkgRecord;
-  if (typeof candidate === 'function') {
-    // Call or instantiate the candidate to obtain a path or helper object.
-    let result: unknown;
-    try {
-      result = (candidate as (...args: unknown[]) => unknown)();
-    } catch (err) {
-      // If it's a class constructor, instantiate with `new`.
-      const fnStr = String(candidate);
-      if (/^class\s/.test(fnStr)) {
-        const Constructor = candidate as unknown as new (
-          ...args: unknown[]
-        ) => unknown;
-        result = new Constructor();
-      } else {
-        throw err;
-      }
-    }
+  let launchOptions: Parameters<typeof playwrightChromium.launch>[0];
 
-    if (result instanceof Promise) result = await result;
+  if (isDev) {
+    launchOptions = {
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    };
+  } else {
+    const chromium = (await import('@sparticuz/chromium')).default;
+    chromium.setGraphicsMode = false;
 
-    // Normalize possible return shapes to a string path.
-    if (typeof result === 'string') {
-      execPath = result;
-    } else if (result && typeof result === 'object') {
-      const r = result as Record<string, unknown>;
-      if (typeof r.executablePath === 'function') {
-        const p = (r.executablePath as (...a: unknown[]) => unknown)();
-        execPath = p instanceof Promise ? String(await p) : String(p);
-      } else if (typeof r.executablePathSync === 'function') {
-        execPath = String((r.executablePathSync as () => unknown)());
-      } else if (typeof r.path === 'string') {
-        execPath = r.path;
-      }
-    }
-  } else if (typeof candidate === 'string') {
-    execPath = candidate;
+    const executablePath = await chromium.executablePath();
+    launchOptions = {
+      args: chromium.args,
+      executablePath,
+      headless: true,
+    };
   }
 
-  const launchOptions: LaunchOptions = {
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  };
-
-  if (execPath) launchOptions.executablePath = execPath;
-
-  const browser = await chromium.launch(launchOptions);
-  const page = await browser.newPage({
-    viewport: { width: 1280, height: 800 },
-  });
-  await page.setContent(html, { waitUntil: 'networkidle' });
-  const pdf = await page.pdf({ format: 'A4', printBackground: true });
-  await browser.close();
-
-  return Buffer.from(pdf);
+  const browser = await playwrightChromium.launch(launchOptions);
+  try {
+    const page = await browser.newPage({
+      viewport: { width: 1280, height: 800 },
+    });
+    // Avoid networkidle — external font requests can hang or timeout on Vercel.
+    await page.setContent(html, { waitUntil: 'load', timeout: 30_000 });
+    const pdf = await page.pdf({ format: 'A4', printBackground: true });
+    return Buffer.from(pdf);
+  } finally {
+    await browser.close();
+  }
 }
 
 export async function POST(request: Request) {
