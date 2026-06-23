@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { supabase } from '@/lib/supabase';
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
@@ -289,36 +290,56 @@ function generateReportHTML(data: {
   `;
 }
 
+function resolveLocalChrome(): string | undefined {
+  const candidates = [
+    process.env.CHROME_EXECUTABLE_PATH,
+    process.env.PUPPETEER_EXECUTABLE_PATH,
+    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+    'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    '/usr/bin/google-chrome',
+    '/usr/bin/chromium-browser',
+  ].filter((path): path is string => Boolean(path));
+
+  return candidates.find((path) => existsSync(path));
+}
+
 async function generatePDF(html: string): Promise<Buffer> {
-  const { chromium: playwrightChromium } = await import('playwright-core');
-  const isDev = process.env.NODE_ENV === 'development';
+  const puppeteer = await import('puppeteer-core');
+  const isVercel = Boolean(process.env.VERCEL);
 
-  let launchOptions: Parameters<typeof playwrightChromium.launch>[0];
+  let executablePath: string;
+  let args: string[];
 
-  if (isDev) {
-    launchOptions = {
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    };
-  } else {
+  if (isVercel) {
     const chromium = (await import('@sparticuz/chromium')).default;
     chromium.setGraphicsMode = false;
-
-    const executablePath = await chromium.executablePath();
-    launchOptions = {
-      args: chromium.args,
-      executablePath,
-      headless: true,
-    };
+    executablePath = await chromium.executablePath();
+    args = chromium.args;
+  } else {
+    const localChrome = resolveLocalChrome();
+    if (!localChrome) {
+      throw new Error(
+        'No local Chrome found. Install Chrome or set CHROME_EXECUTABLE_PATH.'
+      );
+    }
+    executablePath = localChrome;
+    args = ['--no-sandbox', '--disable-setuid-sandbox'];
   }
 
-  const browser = await playwrightChromium.launch(launchOptions);
+  const browser = await puppeteer.default.launch({
+    args,
+    executablePath,
+    headless: true,
+  });
+
   try {
-    const page = await browser.newPage({
-      viewport: { width: 1280, height: 800 },
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 800 });
+    await page.setContent(html, {
+      waitUntil: 'load',
+      timeout: 30_000,
     });
-    // Avoid networkidle — external font requests can hang or timeout on Vercel.
-    await page.setContent(html, { waitUntil: 'load', timeout: 30_000 });
     const pdf = await page.pdf({ format: 'A4', printBackground: true });
     return Buffer.from(pdf);
   } finally {
